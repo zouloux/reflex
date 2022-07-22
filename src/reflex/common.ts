@@ -42,10 +42,10 @@ export type RenderDom = Element|Text
 
 // FIXME : Cannot be VNode[] in current implementation.
 // FIXME : Cannot be string in current implementation.
-export type RenderFunction = () => VNode
+export type RenderFunction = (props?:object) => VNode
 export type FunctionalComponent = RenderFunction
 export type ComponentReturn = RenderFunction|VNode
-export type FactoryComponent = () => RenderFunction
+export type FactoryComponent = (props?:object) => RenderFunction
 export type ComponentFunction = FunctionalComponent|FactoryComponent
 
 export type LifecycleHandler <GReturn = void> = (...rest) => GReturn

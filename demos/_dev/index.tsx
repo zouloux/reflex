@@ -14,8 +14,13 @@ function ListItem (props) {
 	return <li>{ item.id } : { item.name }</li>
 }
 
+const list = {
+	value: []
+}
+
 function TestComponent () {
-	const list = state<IItem[]>([])
+	// const list = state<IItem[]>([])
+
 	function addItems () {
 		const items = []
 		for ( let i = 0; i < 10; i++ ) {
@@ -25,32 +30,41 @@ function TestComponent () {
 			})
 		}
 		list.value = [ ...list.value, ...items ]
+		init();
 	}
+	console.log('TEST COMPONENT FACTORY', list.value)
 	// addItems();
 	// FIXME : Does not target correct node (it target first child)
 	// return () => <div class={["TestComponent", list.value.length]}>
-	return () => <div class={["TestComponent"]}>
-		<button onClick={ addItems }>Add Items</button>
-		<ul>
-			{list.value.map( item =>
-				<ListItem
-					key={ item.id }
-					item={ item }
-				/>
-			)}
-		</ul>
-		<span>{list.value.length}</span>
-		{
-			list.value.length > 0
-			? <span>YES</span>
-			: null
-		}
-	</div>
+	return () => {
+		console.log('TEST COMPONENT RENDER', list.value)
+		return <div class={["TestComponent"]}>
+			<button onClick={ addItems }>Add Items</button>
+			<ul>
+				{list.value.map( item =>
+					<ListItem
+						key={ item.id }
+						item={ item }
+					/>
+				)}
+			</ul>
+			<span>{list.value.length}</span>
+			{
+				list.value.length > 0
+					? <span>YES</span>
+					: null
+			}
+		</div>
+	}
 }
 
-function DevApp () {
+interface IDevAppProps {
+	emoji:string
+}
+
+function DevApp ( props:IDevAppProps ) {
 	return <div class="Coucou">
-		<h1>Hello</h1>
+		<h1>Hello {props.emoji}</h1>
 		<TestComponent />
 	</div>
 }
@@ -61,8 +75,8 @@ setReflexDebug( true )
 
 export function init () {
 	const p = trackPerformances("Root rendering")
-	const a = <DevApp />
-	console.log('A', a );
+	const a = <DevApp emoji="✌️" />
+	// console.log('A', a );
 	render( a, document.getElementById('App') )
 	// render( a, document.getElementById('App') )
 	p();

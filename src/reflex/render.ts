@@ -2,16 +2,35 @@ import { _ROOT_NODE_TYPE_NAME, VNode } from "./common";
 import { _diffChildren, _diffNode, _DOM_PRIVATE_VIRTUAL_NODE_KEY, renderComponentNode } from "./diff";
 import { _createVNode } from "./jsx";
 import { ComponentInstance } from "./component";
+import { INodeModel, insertDOM, mountNode, patchModel } from "./diff2";
 
 // ----------------------------------------------------------------------------- RENDER
 
-export function render ( rootNode:VNode, parentElement:HTMLElement ) {
-	// When using render, we create a new root node to detect new renders
-	// This node is never rendered, we just attach it to the parentElement and render its children
-	const root = _createVNode( _ROOT_NODE_TYPE_NAME, { children: [rootNode] } )
-	root.dom = parentElement
-	_diffChildren( root, parentElement[ _DOM_PRIVATE_VIRTUAL_NODE_KEY ] )
-	parentElement[ _DOM_PRIVATE_VIRTUAL_NODE_KEY ] = root
+// export function render ( rootNode:VNode, parentElement:HTMLElement ) {
+// 	// When using render, we create a new root node to detect new renders
+// 	// This node is never rendered, we just attach it to the parentElement and render its children
+// 	const root = _createVNode( _ROOT_NODE_TYPE_NAME, { children: [rootNode] } )
+// 	root.dom = parentElement
+// 	_diffChildren( root, parentElement[ _DOM_PRIVATE_VIRTUAL_NODE_KEY ] )
+// 	parentElement[ _DOM_PRIVATE_VIRTUAL_NODE_KEY ] = root
+// }
+
+interface IRootNodeRef {
+	ref		:INodeModel
+	node	:VNode
+}
+
+export function render ( node:VNode, parentElement:HTMLElement ) {
+	let rootNodeRef:IRootNodeRef = parentElement[ _DOM_PRIVATE_VIRTUAL_NODE_KEY ];
+	if ( rootNodeRef ) {
+		patchModel( parentElement, node, rootNodeRef.node, rootNodeRef.ref, document )
+	}
+	else {
+		const ref = mountNode( node, document )
+		rootNodeRef = { ref, node }
+		parentElement[ _DOM_PRIVATE_VIRTUAL_NODE_KEY ] = rootNodeRef;
+		insertDOM( parentElement, ref )
+	}
 }
 
 // ----------------------------------------------------------------------------- INVALIDATION

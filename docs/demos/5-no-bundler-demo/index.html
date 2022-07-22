@@ -1,0 +1,56 @@
+<html>
+<head>
+    <title>Reflex - No Bundler Demo</title>
+    <!-- Load locally built bundle for tests purpose -->
+    <script src="../../dist/reflex.es2017.min.js"></script>
+    <!-- This is how to load Reflex bundle from UNPKG -->
+    <!-- Note : It's better to set version to avoid long load time -->
+<!--    <script src="https://unpkg.com/@zouloux/reflex"></script>-->
+</head>
+<body>
+    <script>
+		// Import reflex, require function is exposed by the loaded bundle
+		const { render, h, state, ref } = require("@zouloux/reflex")
+        // Reflex is also available in public
+		// const { render, h, state, ref } = Reflex
+        // Same as Signal which is injected into the bundle
+        // let signal = Signal()
+
+		// Create a stateful component with
+		function StateTest () {
+			const _s = state( 0 );
+			const _r = ref()
+            // Signal test
+            // _s.onChanged.add( (newValue, oldValue) => {
+			// 	console.log('Signal state changed', {newValue, oldValue})
+            // })
+            // Render some html
+			return () => h('div', {}, [
+				// A button, which will increase the state when clicked
+                h('button', {
+					onClick: async e => {
+						// Increment state, we await so the DOM is ready after
+						await _s.value += 1
+                        // Show passed event and show updated dom
+                        console.log('Event', e)
+						console.log('Ref test:', _r.dom.innerHTML)
+					}
+                }, 'Click me'),
+                // Show the number of click from state
+                h('br', {}),h('br', {}),
+                h('span', { ref: _r }, 'Total clicked ' + _s.value)
+            ])
+        }
+		// Create app V-DOM
+        const App = h('div', { className: 'super' },
+            h('h1', {}, 'Hello 👋 from Reflex' ),
+            h('h4', {}, 'Loaded from UNPKG. No bundler, no JSX ✌️'),
+			h(StateTest, {}),
+            h('p', {}, 'Open console to see event logs.'),
+            h('p', {}, 'And check source code.'),
+        )
+        // Render this stateful app into body
+		render( App, document.body )
+    </script>
+</body>
+</html>

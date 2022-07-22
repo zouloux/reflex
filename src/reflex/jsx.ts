@@ -36,7 +36,7 @@ export function h ( type, props:any, ...children ) {
 	if ( props == null ) props = {}
 	props.children = props.children ? props.children : children
 	const node = _createVNode( type, props, props.key, props.ref )
-	triggerDataListenerForNode( node )
+	// triggerDataListenerForNode( node )
 	return node;
 }
 
